@@ -42,7 +42,6 @@ class Products with ChangeNotifier{
   }
   List<Product> get fav {
     return _item.where((pdt) => pdt.isFavorite).toList();
-    notifyListeners();
   }
   void addProduct() {
     //_item.add(value);
