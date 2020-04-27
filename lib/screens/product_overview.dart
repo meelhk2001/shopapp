@@ -4,6 +4,7 @@ import 'package:shopapp/widgets/badge.dart';
 import '../widgets/products_grid.dart';
 import 'package:provider/provider.dart';
 import 'cart_screen.dart';
+import '../widgets/app_drawer.dart';
 
 enum filter { favoriteOnly, showAll, }
 
@@ -18,6 +19,7 @@ class _ProductOverviewState extends State<ProductOverview> {
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context);
     return Scaffold(
+      drawer: AppDrawer(),
       appBar: AppBar(
         title: Text('My Shop'),
         actions: <Widget>[

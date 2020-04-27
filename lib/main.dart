@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:shopapp/providers/cart.dart';
-import 'package:shopapp/screens/cart_screen.dart';
+import './providers/cart.dart';
+import './screens/cart_screen.dart';
+import './screens/orders_screen.dart';
 import './screens/product_overview.dart';
 import './screens/product_detail.dart';
 import './providers/products.dart';
 import 'package:provider/provider.dart';
-import './providers/cart.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import './providers/orders.dart';
 
-void main() { 
-  
+void main() {
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.dumpErrorToConsole(details);
-    if (kReleaseMode)
-      exit(1);
+    if (kReleaseMode) exit(1);
   };
 
-  runApp(MyApp());}
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -27,6 +27,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(value: Products()),
         ChangeNotifierProvider.value(
           value: Cart(),
+        ),
+        ChangeNotifierProvider.value(
+          value: Orders(),
         )
       ],
       child: MaterialApp(
@@ -40,7 +43,8 @@ class MyApp extends StatelessWidget {
           routes: {
             ProductDetails.routeName: (_) => ProductDetails(),
             //CartScreen.routeName: (_) => CartScreen(),
-            CartScreen.routeName : (_)=>CartScreen(),
+            CartScreen.routeName: (_) => CartScreen(),
+            OrdersScreen.routeName: (_) => OrdersScreen(),
           }),
     );
   }

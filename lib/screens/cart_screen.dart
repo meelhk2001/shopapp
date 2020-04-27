@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/cart_item.dart';
 import '../providers/cart.dart' show Cart;
 import 'package:provider/provider.dart';
+import '../providers/orders.dart';
 
 class CartScreen extends StatefulWidget {
   @override
@@ -27,7 +28,7 @@ class _CartScreenState extends State<CartScreen> {
                     Spacer(),
                     Chip(
                       label: Text(
-                        '\$${cart.totalPrice}',
+                        '\$${cart.totalPrice.toStringAsFixed(2)}',
                         style: TextStyle(
                             color:
                                 Theme.of(context).primaryTextTheme.title.color),
@@ -35,7 +36,14 @@ class _CartScreenState extends State<CartScreen> {
                       backgroundColor: Theme.of(context).primaryColor,
                     ),
                     FlatButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Provider.of<Orders>(context, listen: false).addOrder(
+                          cart.items.values.toList(),
+                          cart.totalPrice,
+                        
+                        );
+                        cart.clear();
+                      },
                       child: Text('Order Now'),
                       textColor: Theme.of(context).primaryColor,
                     )
