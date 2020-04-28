@@ -2,6 +2,6 @@ github commands
 echo "# shopapp" >> README.md
 git init
 git add README.md
-git commit -m "first commit"
+git commit -m "shopapp"
 git remote add origin https://github.com/meelhk2001/shopapp.git
 git push -u origin master
