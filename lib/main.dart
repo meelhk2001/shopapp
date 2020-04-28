@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopapp/screens/user_products_screen.dart';
 import './providers/cart.dart';
 import './screens/cart_screen.dart';
 import './screens/orders_screen.dart';
@@ -9,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import './providers/orders.dart';
+import 'screens/edit_product_screen.dart';
 
 void main() {
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -45,6 +47,7 @@ class MyApp extends StatelessWidget {
             //CartScreen.routeName: (_) => CartScreen(),
             CartScreen.routeName: (_) => CartScreen(),
             OrdersScreen.routeName: (_) => OrdersScreen(),
+            UserProductsScreen.routeName: (_) => UserProductsScreen(),
           }),
     );
   }
