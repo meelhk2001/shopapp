@@ -14,12 +14,38 @@ class _EditProductScreenState extends State<EditProductScreen> {
   var _imageUrlController = TextEditingController();
   final _focusImageUrl = FocusNode();
   var _form = GlobalKey<FormState>();
-  var editedProduct =
+  var _editedProduct =
       Product(id: null, title: '', price: 0, description: '', imageUrl: '');
+      var _initValues = {
+    'title': '',
+    'description': '',
+    'price': '',
+    'imageUrl': '',
+  };
+  var _isInit = true;
   @override
   void initState() {
     _focusImageUrl.addListener(_focusChange);
     super.initState();
+  }
+  void didChangeDependencies() {
+    if (_isInit) {
+      final productId = ModalRoute.of(context).settings.arguments as String;
+      if (productId != null) {
+        _editedProduct =
+            Provider.of<Products>(context, listen: false).findById(productId);
+        _initValues = {
+          'title': _editedProduct.title,
+          'description': _editedProduct.description,
+          'price': _editedProduct.price.toString(),
+          // 'imageUrl': _editedProduct.imageUrl,
+          'imageUrl': '',
+        };
+        _imageUrlController.text = _editedProduct.imageUrl;
+      }
+    }
+    _isInit = false;
+    super.didChangeDependencies();
   }
   void dispose() {
     _focusImageUrl.removeListener(_focusChange);
@@ -42,8 +68,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
       return;
     }
     _form.currentState.save();
-    Provider.of<Products>(context, listen: false).addProduct(editedProduct);
-   
+    if (_editedProduct.id != null) {
+      Provider.of<Products>(context, listen: false)
+          .updateProduct(_editedProduct.id, _editedProduct);
+    }
+    else{
+    Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+    }
+    Navigator.of(context).pop();
   }
 
   @override
@@ -62,6 +94,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
             child: ListView(
               children: <Widget>[
                 TextFormField(
+                  initialValue: _initValues['title'],
                   decoration: InputDecoration(labelText: 'Title'),
                   textInputAction: TextInputAction.next,
                   validator: (value) {
@@ -74,15 +107,17 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     FocusScope.of(context).requestFocus(_focusPrice);
                   },
                   onSaved: (value) {
-                    editedProduct = Product(
-                        id: null,
+                    _editedProduct = Product(
+                        id: _editedProduct.id,
                         title: value,
                         description: '',
                         imageUrl: '',
-                        price: 0.0);
+                        price: 0.0,
+                        isFavorite: _editedProduct.isFavorite);
                   },
                 ),
                 TextFormField(
+                  initialValue: _initValues['price'],
                   decoration: InputDecoration(labelText: 'Price'),
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
@@ -100,36 +135,40 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     FocusScope.of(context).requestFocus(_focusDescripsion);
                   },
                   onSaved: (value) {
-                    editedProduct = Product(
-                        id: null,
-                        title: editedProduct.title,
+                    _editedProduct = Product(
+                        id: _editedProduct.id,
+                        title: _editedProduct.title,
                         description: '',
                         imageUrl: '',
-                        price: double.parse(value));
+                        price: double.parse(value),
+                        isFavorite: _editedProduct.isFavorite
+                        );
                   },
                 ),
                 TextFormField(
-                  decoration: InputDecoration(labelText: 'Descripsion'),
+                  initialValue: _initValues['description'],
+                  decoration: InputDecoration(labelText: 'Description'),
                   maxLines: 3,
                   keyboardType: TextInputType.multiline,
                   focusNode: _focusDescripsion,
-                  onFieldSubmitted: (_) {},
                   validator: (value) {
                     if (value.isEmpty) {
-                      return 'Please provide the Descripsion';
+                      return 'Please provide the Description';
                     }
                     if (value.length < 10) {
-                      return 'Too Short Descripsion';
+                      return 'Too Short Description';
                     }
                     return null;
                   },
                   onSaved: (value) {
-                    editedProduct = Product(
-                        id: null,
-                        title: editedProduct.title,
+                    _editedProduct = Product(
+                        id: _editedProduct.id,
+                        title: _editedProduct.title,
                         description: value,
                         imageUrl: '',
-                        price: editedProduct.price);
+                        price: _editedProduct.price,
+                        isFavorite: _editedProduct.isFavorite
+                        );
                   },
                 ),
                 Row(
@@ -177,12 +216,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           return null;
                         },
                         onSaved: (value) {
-                          editedProduct = Product(
-                              id: null,
-                              title: editedProduct.title,
-                              description: editedProduct.description,
+                          _editedProduct = Product(
+                              id: _editedProduct.id,
+                              title: _editedProduct.title,
+                              description: _editedProduct.description,
                               imageUrl: value,
-                              price: editedProduct.price);
+                              price: _editedProduct.price,
+                              isFavorite: _editedProduct.isFavorite);
                         },
                         onFieldSubmitted: (_) {
                           _saveForm();
