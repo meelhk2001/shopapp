@@ -7,6 +7,7 @@ class UserProductItem extends StatelessWidget {
   final String id;
   final String title;
   final String imageUrl;
+  var _isLoading = false;
 
   UserProductItem(this.id, this.title, this.imageUrl);
 
@@ -31,7 +32,23 @@ class UserProductItem extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.delete),
               onPressed: () {
-                Provider.of<Products>(context, listen: false).deleteProduct(id);
+                showDialog(
+          context: context, builder: (ctx) => AlertDialog(
+            title: Text('Are you sure?'),
+            content: Text('Do you want to delete this item?'),
+            actions: <Widget>[
+              FlatButton(onPressed: (){
+                Navigator.of(ctx).pop();
+              }, child: Text('No')),
+              FlatButton(onPressed: ()async {
+                Navigator.of(ctx).pop();
+                  Provider.of<Products>(context, listen: false).deleteProduct(id);
+                
+              }, child: Text('Yes'))
+            ],
+          )
+        );
+               
               },
               color: Theme.of(context).errorColor,
             ),

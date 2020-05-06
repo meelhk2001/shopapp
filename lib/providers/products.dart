@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'product.dart';
+import 'package:http/http.dart' as http ;
+import '../models/http_exception.dart';
 
 class Products with ChangeNotifier {
   List<Product> _item = [
-    Product(
+    /*Product(
       id: 'p1',
       title: 'Red Shirt',
       description: 'A red shirt - it is pretty red!',
@@ -34,10 +37,35 @@ class Products with ChangeNotifier {
       price: 49.99,
       imageUrl:
           'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
-    ),
+    ),*/
   ];
   List<Product> get items {
     return [..._item];
+  }
+  Future<void> fetchAndSetProducts() async{
+    try{
+      const url ='https://shop-app-meelhk.firebaseio.com/products.json';
+    var response = await http.get(url);
+    var extractedData = json.decode(response.body) as Map<String, dynamic>;
+    if(extractedData == null){return;}
+    List<Product> loadedProduct = [];
+    extractedData.forEach((id, pdtData){
+      loadedProduct.add(
+        Product(id: id,
+        description: pdtData["description"],
+        imageUrl: pdtData["imageUrl"],
+        price: pdtData["price"],
+        title: pdtData["title"],
+        isFavorite: pdtData["isFavorite"] 
+        )
+      );
+      _item = loadedProduct;
+      notifyListeners();
+    });
+    }
+    catch(error){
+      throw error;
+    }
   }
 
   Product findById(String id) {
@@ -47,28 +75,64 @@ class Products with ChangeNotifier {
   List<Product> get fav {
     return _item.where((pdt) => pdt.isFavorite).toList();
   }
-  void updateProduct(String id, Product newProduct){
+  Future <void> updateProduct(String id, Product newProduct) async{
      final prodIndex = _item.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
+      final url = 'https://shop-app-meelhk.firebaseio.com/products/$id.json';
+      try{
+        await http.patch(url, body: json.encode({
+          'title': newProduct.title,
+      'price': newProduct.price,
+      'description': newProduct.description,
+      'imageUrl': newProduct.imageUrl,
+        }));
+      }
+      catch(error){
+        throw error;
+      }
       _item[prodIndex] = newProduct;
       notifyListeners();
     } else {
       print('...');
     }
   }
-   void deleteProduct(String id) {
-    _item.removeWhere((prod) => prod.id == id);
-    notifyListeners();
+   void deleteProduct(String id) async{
+     final index = _item.indexWhere((exiestingProduct)=> exiestingProduct.id == id);
+     var existingProduct = _item[index];
+     _item.removeAt(index);
+     notifyListeners();
+       final url = 'https://shop-app-meelhk.firebaseio.com/products/$id.json';
+        final response = await http.delete(url);
+        if (response.statusCode >= 400) {
+      _item.insert(index, existingProduct);
+      notifyListeners();
+      throw HttpException('Could not delete product.');
+    }
+    existingProduct = null; 
+    
   }
 
-  void addProduct(Product product) {
-   var newProduct = Product(
-        id: DateTime.now().toString(),
+  Future <void> addProduct(Product product) async{
+    const url = 'https://shop-app-meelhk.firebaseio.com/products.json';
+    try{
+      var response = await http.post(url,body: json.encode({
+      'title': product.title,
+      'price': product.price,
+      'description': product.description,
+      'imageUrl': product.imageUrl,
+      'isFavorite':false
+    }));
+     var newProduct = Product(
+        id: json.decode(response.body)["name"],
         title: product.title,
         description: product.description,
         imageUrl: product.imageUrl,
         price: product.price);
     _item.add(newProduct);
     notifyListeners();
+    }
+       catch(error){
+      throw error;
+    }
   }
 }
