@@ -19,18 +19,21 @@ class OrderItem {
 
 class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
+  final String authToken;
 
   List<OrderItem> get orders {
     return [..._orders];
   }
 
+  Orders(this.authToken, this._orders);
+
   Future<void> fetchAndSetOrders() async {
-    const url = 'https://shop-app-meelhk.firebaseio.com/orders.json';
+    final url =
+        'https://shop-app-meelhk.firebaseio.com/orders.json?auth=$authToken';
     final response = await http.get(url);
     final List<OrderItem> loadedOrders = [];
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     if (extractedData == null) {
-      print('bhai ye TO NULL HI AAYA H YAHA PAR//////////////////////////////////\\\\');
       return;
     }
     extractedData.forEach((orderId, orderData) {
@@ -42,11 +45,11 @@ class Orders with ChangeNotifier {
           products: (orderData['products'] as List<dynamic>)
               .map(
                 (item) => CartItem(
-                      id: item['id'],
-                      price: item['price'],
-                      quantity: item['quantity'],
-                      title: item['title'],
-                    ),
+                  id: item['id'],
+                  price: item['price'],
+                  quantity: item['quantity'],
+                  title: item['title'],
+                ),
               )
               .toList(),
         ),
@@ -56,9 +59,9 @@ class Orders with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addOrder(List<CartItem> cartProducts, double total) async{
-    
-    const url = 'https://shop-app-meelhk.firebaseio.com/orders.json';
+  Future<void> addOrder(List<CartItem> cartProducts, double total) async {
+    final url =
+        'https://shop-app-meelhk.firebaseio.com/orders.json?auth=$authToken';
     final timestamp = DateTime.now();
     final response = await http.post(
       url,
@@ -67,7 +70,6 @@ class Orders with ChangeNotifier {
         'dateTime': timestamp.toIso8601String(),
         'products': cartProducts
             .map((cp) => {
-              
                   'id': cp.id,
                   'title': cp.title,
                   'quantity': cp.quantity,

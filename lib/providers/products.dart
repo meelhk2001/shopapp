@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http ;
 import '../models/http_exception.dart';
 
 class Products with ChangeNotifier {
+  String authToken;
   List<Product> _item = [
     /*Product(
       id: 'p1',
@@ -39,12 +40,13 @@ class Products with ChangeNotifier {
           'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
     ),*/
   ];
+  Products(this.authToken, this._item);
   List<Product> get items {
     return [..._item];
   }
   Future<void> fetchAndSetProducts() async{
     try{
-      const url ='https://shop-app-meelhk.firebaseio.com/products.json';
+      final url ='https://shop-app-meelhk.firebaseio.com/products.json?auth=$authToken';
     var response = await http.get(url);
     var extractedData = json.decode(response.body) as Map<String, dynamic>;
     if(extractedData == null){return;}
@@ -78,7 +80,7 @@ class Products with ChangeNotifier {
   Future <void> updateProduct(String id, Product newProduct) async{
      final prodIndex = _item.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
-      final url = 'https://shop-app-meelhk.firebaseio.com/products/$id.json';
+      final url = 'https://shop-app-meelhk.firebaseio.com/products/$id.json?auth=$authToken';
       try{
         await http.patch(url, body: json.encode({
           'title': newProduct.title,
@@ -101,7 +103,7 @@ class Products with ChangeNotifier {
      var existingProduct = _item[index];
      _item.removeAt(index);
      notifyListeners();
-       final url = 'https://shop-app-meelhk.firebaseio.com/products/$id.json';
+       final url = 'https://shop-app-meelhk.firebaseio.com/products/$id.json?auth=$authToken';
         final response = await http.delete(url);
         if (response.statusCode >= 400) {
       _item.insert(index, existingProduct);
@@ -113,7 +115,7 @@ class Products with ChangeNotifier {
   }
 
   Future <void> addProduct(Product product) async{
-    const url = 'https://shop-app-meelhk.firebaseio.com/products.json';
+    final url = 'https://shop-app-meelhk.firebaseio.com/products.json?auth=$authToken';
     try{
       var response = await http.post(url,body: json.encode({
       'title': product.title,

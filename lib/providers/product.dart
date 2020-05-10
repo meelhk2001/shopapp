@@ -17,16 +17,17 @@ class Product with ChangeNotifier {
       @required this.price,
       this.isFavorite = false});
 
-    void _setFavValue(bool newValue) {
+  void _setFavValue(bool newValue) {
     isFavorite = newValue;
     notifyListeners();
   }
 
-  Future <void> setFavorite () async{
+  Future<void> setFavorite(String authToken) async {
     final oldStatus = isFavorite;
-     isFavorite = !isFavorite;
-     final url = 'https://shop-app-meelhk.firebaseio.com/products/$id.json';
-     try{
+    isFavorite = !isFavorite;
+    final url =
+        'https://shop-app-meelhk.firebaseio.com/products/$id.json?auth=$authToken';
+    try {
       final response = await http.patch(
         url,
         body: json.encode({

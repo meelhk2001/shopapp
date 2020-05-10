@@ -1,3 +1,4 @@
+ip route show
 github commands
 echo "# shopapp" >> README.md
 git init
