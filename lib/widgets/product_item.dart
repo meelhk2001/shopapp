@@ -38,7 +38,7 @@ class ProductItem extends StatelessWidget {
                   ),
                   color: Theme.of(cntx).accentColor,
                   onPressed: () {
-                    pdt.setFavorite(authData.token);
+                    pdt.setFavorite(authData.token, authData.userId);
                   }),
             ),
             trailing: IconButton(

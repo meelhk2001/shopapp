@@ -22,22 +22,23 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setFavorite(String authToken) async {
+  Future<void> setFavorite(String authToken, String userId) async {
     final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     final url =
-        'https://shop-app-meelhk.firebaseio.com/products/$id.json?auth=$authToken';
+        'https://shop-app-meelhk.firebaseio.com/userFavorites/$userId/$id.json?auth=$authToken';
     try {
-      final response = await http.patch(
+      final response = await http.put(
         url,
-        body: json.encode({
-          'isFavorite': isFavorite,
-        }),
+        body: json.encode(
+          isFavorite,
+        ),
       );
       if (response.statusCode >= 400) {
         _setFavValue(oldStatus);
       }
     } catch (error) {
+      print(error.toString());
       _setFavValue(oldStatus);
     }
     notifyListeners();

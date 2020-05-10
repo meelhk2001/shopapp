@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shopapp/providers/product.dart';
 import 'screens/user_products_screen.dart';
 import './providers/cart.dart';
 import './screens/cart_screen.dart';
@@ -31,7 +30,7 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider.value(value: Auth()),
           ChangeNotifierProxyProvider<Auth, Products>(
-              update: (context, auth, previousProducts) => Products(auth.token,
+              update: (context, auth, previousProducts) => Products(auth.token, auth.userId,
                   previousProducts == null ? [] : previousProducts.items)),
           ChangeNotifierProvider.value(
             value: Cart(),

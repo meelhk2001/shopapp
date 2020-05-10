@@ -8,7 +8,7 @@ import 'edit_product_screen.dart';
 class UserProductsScreen extends StatelessWidget {
   static const routeName = '/user-products';
   Future<void> _refresh(BuildContext ctx) async{
-    Provider.of<Products>(ctx).fetchAndSetProducts();
+    Provider.of<Products>(ctx).fetchAndSetProducts(true);
   }
 
   @override
