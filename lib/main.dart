@@ -13,6 +13,7 @@ import './providers/orders.dart';
 import 'screens/edit_product_screen.dart';
 import 'screens/auth_screen.dart';
 import 'providers/auth.dart';
+import './screens/splash_screen.dart';
 
 void main() {
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -30,13 +31,17 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider.value(value: Auth()),
           ChangeNotifierProxyProvider<Auth, Products>(
-              update: (context, auth, previousProducts) => Products(auth.token, auth.userId,
+              update: (context, auth, previousProducts) => Products(
+                  auth.token,
+                  auth.userId,
                   previousProducts == null ? [] : previousProducts.items)),
           ChangeNotifierProvider.value(
             value: Cart(),
           ),
           ChangeNotifierProxyProvider<Auth, Orders>(
-            update: (context, auth, previousOrders) => Orders(auth.token,
+            update: (context, auth, previousOrders) => Orders(
+                auth.token,
+                auth.userId,
                 previousOrders == null ? [] : previousOrders.orders),
           ),
         ],
@@ -48,7 +53,16 @@ class MyApp extends StatelessWidget {
                 accentColor: Colors.deepOrange,
                 fontFamily: 'Lato',
               ),
-              home: auth.isAuth ? ProductOverview() : AuthScreen(),
+              home: auth.isAuth
+                  ? ProductOverview()
+                  : FutureBuilder(
+                      future: auth.tryAutoLogin(),
+                      builder: (ctx, authResultSnapshot) =>
+                          authResultSnapshot.connectionState ==
+                                  ConnectionState.waiting
+                              ? SplashScreen()
+                              : AuthScreen(),
+                    ),
               routes: {
                 ProductDetails.routeName: (_) => ProductDetails(),
                 CartScreen.routeName: (_) => CartScreen(),

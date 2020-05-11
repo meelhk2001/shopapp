@@ -47,7 +47,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts([bool filters=false]) async {
-    String filter = filters ? '&orderBy="createrId""equalsTo=""$userId"' : '';
+    String filter = filters ? '&orderBy="createrId"&equalTo="$userId"' : '';
     try {
       var url =
           'https://shop-app-meelhk.firebaseio.com/products.json?auth=$authToken$filter';
