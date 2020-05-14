@@ -20,9 +20,13 @@ class ProductItem extends StatelessWidget {
       child: GridTile(
         child: GestureDetector(
           onTap: () => productDetails(context, pdt.id),
-          child: Image.network(
-            pdt.imageUrl,
-            fit: BoxFit.cover,
+          child: Hero(
+            tag: pdt.id,
+                      child: FadeInImage(
+                placeholder: AssetImage('assets/images/product-placeholder.png'),
+                image: NetworkImage(pdt.imageUrl),
+                fit: BoxFit.cover,
+                ),
           ),
         ),
         footer: GridTileBar(
